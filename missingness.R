@@ -32,7 +32,13 @@ train %>% group_by(Electrical) %>% count()
 train %>% filter(is.na(GarageType)) %>% group_by(GarageType,GarageCond,GarageYrBlt) %>%
   count()
 
-train %>% filter(is.na(BsmtFinType1)) %>% select(BsmtCond,BsmtQual,BsmtExposure)
+train %>% filter(is.na(BsmtFinType2)) %>% select(BsmtCond,BsmtQual,BsmtFinType1)
+
+train %>% filter(is.na(BsmtExposure)) %>% select(BsmtCond,BsmtQual,BsmtFinType1)
+
+  select(BsmtFinType2,BsmtExposure) %>% group_by(BsmtFinType2,BsmtExposure) %>% count()
+
+train %>% filter(is.na(BsmtExposure)) %>% select(BsmtCond,BsmtQual,BsmtFinType1)
 
 train %>% group_by(MasVnrType) %>% count()
 
