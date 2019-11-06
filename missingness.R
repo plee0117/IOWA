@@ -86,10 +86,20 @@ train %>% filter(is.na(GarageType)) %>% group_by(GarageType,GarageCond,GarageYrB
   count()
 # If GarageType is NA, indicating no garage, all other quality information contains NA as well
 
+
 # Columns associated with BasementFeatures have very similar number and percentage of missingness
 train %>% filter(is.na(BsmtFinType1)) %>% select(BsmtCond,BsmtQual,BsmtExposure)
 # If BsmtFinType1 is NA, indicating no Basement, other variables have NAs as well 
 # BsmtExposure and BsmtFinType2 have 1 additional missing value each
+
+train %>% filter(is.na(BsmtFinType2)) %>% select(BsmtCond,BsmtQual,BsmtFinType1)
+
+train %>% filter(is.na(BsmtExposure)) %>% select(BsmtCond,BsmtQual,BsmtFinType1) %>%
+
+  select(BsmtFinType2,BsmtExposure) %>% group_by(BsmtFinType2,BsmtExposure) %>% count()
+
+train %>% filter(is.na(BsmtExposure)) %>% select(BsmtCond,BsmtQual,BsmtFinType1)
+
 
 # Masonry veneer type and Masonry veneer area have same number of missing values
 train %>% group_by(MasVnrType) %>% count()
