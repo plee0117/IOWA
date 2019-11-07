@@ -40,11 +40,13 @@ vif(model2)
 
 nacols = colnames(train)[unlist(lapply(train, function(x) any(is.na(x)))) == TRUE] #find columns with nas
 
-train_red = train %>% select(-nacols, -psqftGla) #remove na columns
+train_red = train %>% select(-nacols) #remove na columns
 realtest_red = realtest %>% select(-nacols)
 
-vars_name <- train_red %>%  select(-SalePrice) %>% select_if(is.factor) %>% colnames() %>%  paste(collapse = "+")  
-model_string <- paste("y  ~",vars_name )
+factor_names <- train_red %>%  select(-SalePrice) %>% select_if(is.factor) %>% colnames() %>%  paste(collapse = "+")  
+num_names <- train_red %>%  select(-SalePrice) %>% select_if(is.numeric) %>% colnames() %>%  paste(collapse = "+")  
+model_string <- paste("y  ~",num_names)
+model_string = paste(model_string,factor_names, sep = "+")
 
 vars_name_test <- realtest_red %>% select_if(is.factor) %>% colnames() %>%  paste(collapse = "+")  
 model_string_test <- paste("y  ~",vars_name_test )
@@ -69,7 +71,7 @@ lasso1 = cv.glmnet(x = x[trainrows,], y = log(train_red$SalePrice[trainrows]), a
 lasso1_predict = predict.cv.glmnet(lasso1, s=lasso1$lambda.min, newx = x[testrows, ])
 
 mse_lasso = mean((lasso1_predict - y[testrows])^2)
-sqrt(mse_lasso) #[1] 0.212773 with na cols dropped
+sqrt(mse_lasso) # 0.1490916 with na cols dropped
 
 
 #view coeffiecnts with lambda min
@@ -79,7 +81,7 @@ sst_lasso = sum((y[testrows] - mean(y[testrows]))^2)
 sse_lasso = sum((lasso1_predict - y[testrows])^2)
 
 rsq_lasso= 1 - sse_lasso / sst_lasso
-rsq_lasso #0.7934248 on clean data
+rsq_lasso # 0.8751822 on clean data
 
 
 
@@ -89,29 +91,29 @@ ridge1 = cv.glmnet(x = x[trainrows,], y = log(train_red$SalePrice[trainrows]), a
 ridge1_predict = predict.cv.glmnet(ridge1, s=lasso1$lambda.min, newx = x[testrows, ])
 
 mse_ridge = mean((ridge1_predict - y[testrows])^2)
-sqrt(mse_ridge) #[1] 0.1962498 with na col dropped
+sqrt(mse_ridge) # 0.1433603 with na col dropped
 
 sst_ridge = sum((y[testrows] - mean(y[testrows]))^2)
 sse_ridge = sum((ridge1_predict - y[testrows])^2)
 
 rsq_ridge= 1 - sse_ridge / sst_ridge
-rsq_ridge # 0.7849663 on clean data
+rsq_ridge #  0.8845941 on clean data
 
 #predict(ridge1, s = lasso1$lambda.min, type = "coefficients")
 
 #testy_ridge1 =predict.cv.glmnet(ridge1, s=lasso1$lambda.min, newx = actualtest[testrows, ])
 
-###########
+#KNN REGRESSION BASED ON FULL CLEANED DATA SET ####
 
 sqrt(nrow(x[trainrows,])) #34
 
-knnfit = knnreg(x[trainrows,],y = log(train_red$SalePrice[trainrows]), k = 34)
+knnfit = knnreg(x[trainrows,],y[trainrows], k = 4)
 knnfit
 
 knn_predicted = predict(knnfit, x[testrows,])
 
 mse_knn = mean((knn_predicted - y[testrows])^2)
-sqrt(mse_knn) #[1] 0.1962498 with na col dropped
+sqrt(mse_knn) 
 
 sst_knn = sum((y[testrows] - mean(y[testrows]))^2)
 sse_knn = sum((knn_predicted - y[testrows])^2)
@@ -119,4 +121,4 @@ sse_knn = sum((knn_predicted - y[testrows])^2)
 rsq_knn= 1 - sse_knn / sst_knn
 rsq_knn 
 
-
+#still missing lot frontage
