@@ -82,10 +82,12 @@ def kReplace(df, kdf, xvar, yvar):
     for i in np.arange(len(kData)):
         kData[xvar].loc[i] = kData[xvar].loc[i][0]
     
+    kData = kData.drop({"Unnamed: 0", "X"}, axis = 1)
+
     return kData
 
 
 #Example:
-kReplace(data, test, 'Neighborhood', 'SalePrice')
+print(kReplace(data, test, 'Neighborhood', 'SalePrice'))
 
 
