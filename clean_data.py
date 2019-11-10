@@ -50,7 +50,7 @@ def deal_with_NAs(full_set):
         
     # Convert nominal Na's to No
     for col in nominal_nas:
-        full_set.loc[col].fillna(value = 'No', inplace = True)
+        full_set[col].fillna(value = 'No', inplace = True)
 
     # imputation of real Na's aka missing values
 
@@ -101,6 +101,7 @@ def change_features(full_set):
                                          2 if full_set['OpenPorchSF'] > 0 else \
                                          1 if full_set['WoodDeckSF'] > 0 else 0 \
                                          for i in range(1,len(full_set.WoodDeckSF)))
+    full_set.drop(columns = ['3SsnPorch', 'EnclosedPorch', 'ScreenPorch', 'OpenPorchSF', 'WoodDeckSF'], inplace = True)
 
     # Combine PoolArea and PoolQC to PoolYN
     full_set['PoolYN'] = pd.DataFrame(1 if full_set.PoolArea[i] > 0 else 0 for i in range(1,len(full_set.PoolArea)))
@@ -108,28 +109,28 @@ def change_features(full_set):
 
     # Convert Fence to FenceYN
     full_set['FenceYN'] = pd.DataFrame(1 if full_set.Fence[i] > 0 else 0 for i in range(1,len(full_set.Fence)))
-    full_set.drop(columns = 'Fence')
+    full_set.drop(columns = 'Fence', inplace = True)
 
     # Convert LotFrontage to LotOnRoad
     full_set['LotOnRoad'] = pd.DataFrame(1 if full_set.LotFrontage[i] > 0 else 0 for i in range(1,len(full_set.LotFrontage)))
     full_set.drop(columns = 'LotFrontage', inplace = True)
 
     # Drop GarageCars since GarageCars and GarageArea give same information !!Check for overlap of area between the car #s!
-    full_set.drop(columns = 'GarageCars')
+    full_set.drop(columns = 'GarageCars', inplace = True)
 
     # Drop GrLivArea since it is the sum of 1stFlrSF and 2ndFlrSF
-    full_set.drop(columns = 'GrLivArea')
+    full_set.drop(columns = 'GrLivArea', inplace = True)
 
     # Drop MiscFeature since it has the same information as the MiscVal
-    full_set.drop(columns = 'MiscFeature')
+    full_set.drop(columns = 'MiscFeature', inplace = True)
 
     # Drop Alley since it's a rare occurence !! Check Alley vs Price boxplot!!
-    full_set.drop(columns = 'Alley')
+    full_set.drop(columns = 'Alley', inplace = True)
 
     # Drop TotalBsmtSF since it's equal to sum of BsmtFinSF1,BsmtFinSF2, and BsmtUnfSF
-    full_set.drop(columns = 'TotalBsmtSF')
+    full_set.drop(columns = 'TotalBsmtSF', inplace = True)
 
     # Drop MSSubClass since it is a combination of YearBuilt, BldgType, and HouseStyle
-    full_set.drop(columns = 'MSSubClass')
+    full_set.drop(columns = 'MSSubClass', inplace = True)
 
     return full_set
