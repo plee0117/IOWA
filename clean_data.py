@@ -133,4 +133,11 @@ def change_features(full_set):
     # Drop MSSubClass since it is a combination of YearBuilt, BldgType, and HouseStyle
     full_set.drop(columns = 'MSSubClass', inplace = True)
 
+    # Add new feature
+    full_set['PropConsLot'] = full_set['1stFlrSF'] / full_set['LotArea']
+
+    # Label encoding nominal features
+    nominal_kept = set(nominal_columns) & set(full_set.columns)
+    full_set = pd.get_dummies(full_set, prefix_sep = '_', columns=nominal_kept, drop_first = True)
+
     return full_set
