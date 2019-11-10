@@ -1,4 +1,5 @@
-import pandas as 
+import pandas as pd
+import numpy as np
 
 def deal_with_NAs(full_set):
     '''
@@ -92,7 +93,7 @@ def change_features(full_set):
     TotalBsmtSF
     MSSubClass
     '''
-    
+
     # Combine 3SsnPorch, EnclosedPorch, ScreenPorch, OpenPorchSF, and WoodDeckSF into 1 ordinal feature ranking the types
     full_set['PorchType'] = pd.DataFrame(5 if full_set['3SsnPorch'][i] > 0 else \
                                          4 if full_set['EnclosedPorch'][i] > 0 else \
