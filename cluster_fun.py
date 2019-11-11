@@ -9,6 +9,9 @@ def cluster(n, df):
     ARGS:   N = NUMBER OF CLUSTERS FOR KMEANS, 
             DF = DATAFRAME OF 1 CATEGORICAL VARIABLE WITH SALES PRICE
             TARGETVAR = VARIABLE TO CLUSTER (E.G. NEIGHBORHOODS ETC..)
+
+
+    RETURNS DATAFRAME WITH (ORDERED) LABELS ASSIGNED TO CATEGORICAL COLUMN
     '''      
     xvar = df.columns[0]
     yvar = df.columns[1]
@@ -29,9 +32,16 @@ def cluster(n, df):
     #APPLY K MEANS
     kfit = KMeans(n_clusters=n, random_state=0).fit(df_array)
     klabels = kfit.labels_
-    klabels = pd.DataFrame(klabels)
+
+    u, ind = np.unique(klabels,return_index=True)
+    u = u[np.argsort(ind)]
+    klabels_ordered = list(range(1,len(u)+1))
+    kordered_dict = dict(zip(u, klabels_ordered))
+    
+    
     k_df = pd.DataFrame(df_array)
     k_df['klabels'] = klabels
+    k_df['klabels'] = pd.Series(k_df.klabels.map(kordered_dict))
     colnames = df.columns
     k_df.columns = [colnames[0], yvar, 'klabels']
     
@@ -40,16 +50,17 @@ def cluster(n, df):
     kDict = k_df[['klabels', 'mylabels', yvar]]
     kDict = k_df.set_index('klabels').sort_values(yvar).reset_index()
     kDict = k_df.merge(lbl, on= 'mylabels')[['klabels',xvar, yvar]].sort_values(yvar) #Sale price is mean in each category 
+    
     return kDict
 
 
 #Example:
-data = pd.read_csv('data_clean.csv')
-train = data[0:1460]
+#data = pd.read_csv('data_clean.csv')
+#train = data[0:1460]
 
-cluster(2, train[['MSZoning', 'SalePrice']])
+#cluster(2, train[['MSZoning', 'SalePrice']])
 
-test = cluster(5,train[['Neighborhood', 'SalePrice']])
+#test = cluster(5,train[['Neighborhood', 'SalePrice']])
 
 
 
@@ -73,8 +84,7 @@ def kReplace(df, kdf, xvar, yvar):
     kdf = kdf.set_index(xvar).transpose().to_dict(orient='list')
    
     for i in np.arange(len(df)):
-        a = kdf.get(df[xvar].loc[i])
-        kData[ktargetname].loc[i]  = a
+        kData[ktargetname].loc[i]  = kdf.get(df[xvar].loc[i])
         
     kData = kData.drop(xvar, axis = 1)
     kData = kData.rename(columns={ktargetname: xvar})
@@ -82,12 +92,10 @@ def kReplace(df, kdf, xvar, yvar):
     for i in np.arange(len(kData)):
         kData[xvar].loc[i] = kData[xvar].loc[i][0]
     
-    kData = kData.drop({"Unnamed: 0", "X"}, axis = 1)
-
     return kData
 
 
 #Example:
-print(kReplace(data, test, 'Neighborhood', 'SalePrice'))
+#print(kReplace(data, test, 'Neighborhood', 'SalePrice'))
 
 
