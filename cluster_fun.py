@@ -83,14 +83,17 @@ def kReplace(df, kdf, xvar, yvar):
     kdf = kdf.drop(yvar, axis = 1)
     kdf = kdf.set_index(xvar).transpose().to_dict(orient='list')
    
+    for k, v in kdf.items():
+        kdf[k] = v[0]
+
     for i in np.arange(len(df)):
         kData[ktargetname].loc[i]  = kdf.get(df[xvar].loc[i])
         
     kData = kData.drop(xvar, axis = 1)
     kData = kData.rename(columns={ktargetname: xvar})
     
-    for i in np.arange(len(kData)):
-        kData[xvar].loc[i] = kData[xvar].loc[i][0]
+    #for i in np.arange(len(kData)):
+    #    kData[xvar].loc[i] = kData[xvar].loc[i][0]
     
     return kData
 
